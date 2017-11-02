@@ -1,8 +1,8 @@
 # MagicMirror² Module: Skyss
 'MMM-Skyss' is a module based on the Ruter equivalent made by Cato Antonsen for displaying public transport information for the Hordaland region in Norway on a [MagicMirror²](https://magicmirror.builders/). It's using data from Skyss.no. Skyss is a registered trademark of Hordaland County Councile (Hordaland Fylkeskommune) which is not affiliated with this product. Content from Skyss APIs may be copyrighted.
 
-![Simple](images/MMM-Ruter_Simple.png)
-![Full](images/MMM-Ruter_Full.png) 
+![1](images/MMM-Skyss-1.png)
+![2](images/MMM-Skyss-2.png) 
 
 Current version is s1.3.0 See [changelog](CHANGELOG.md "Version history") for version history.
 
