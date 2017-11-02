@@ -4,8 +4,8 @@
  * By Cato Antonsen (https://github.com/CatoAntonsen)
  * MIT Licensed.
  */
- 
-Module.register("MMM-Ruter",{
+
+Module.register("MMM-Skyss",{
 
 	// Default module config.
 	defaults: {
@@ -23,7 +23,7 @@ Module.register("MMM-Ruter",{
 	},
 
 	getStyles: function () {
-		return ["ruter.css"];
+		return ["skyss.css"];
 	},
 
 	getScripts: function() {
@@ -47,38 +47,38 @@ Module.register("MMM-Ruter",{
  		// Set locale and time format based on global config
 		moment.locale(config.language);
 		if (config.timeFormat === 24) {
-				this.config.timeFormat = 'HH:mm';
+			this.config.timeFormat = "HH:mm";
 		} else {
-				this.config.timeFormat = 'h:mm A';
+			this.config.timeFormat = "h:mm A";
 		}
 
 		// Just do an initial poll. Otherwise we have to wait for the serviceReloadInterval
-		self.startPolling(); 
+		self.startPolling();
 
 		setInterval(function() {
 			self.startPolling();
 		}, this.config.serviceReloadInterval);
-		
+
 		setInterval(function() {
 			self.updateDomIfNeeded();
 		}, this.config.timeReloadInterval);
 	},
-	
+
 	getDom: function() {
 		if (this.journeys.length > 0) {
-			
+
 			var table = document.createElement("table");
 			table.className = "ruter small";
-			
+
 			if (this.config.showHeader) {
 				table.appendChild(this.getTableHeaderRow());
 			}
-			
+
 			for(var i = 0; i < this.journeys.length; i++) {
 
 				var journey = this.journeys[i];
 				var tr = this.getTableRow(journey);
-				
+
 				// Create fade effect. <-- stolen from default "calendar" module
 				if (this.config.fade && this.config.fadePoint < 1) {
 					if (this.config.fadePoint < 0) {
@@ -91,10 +91,10 @@ Module.register("MMM-Ruter",{
 						tr.style.opacity = 1 - (1 / steps * currentStep);
 					}
 				}
-				
+
 				table.appendChild(tr);
 			}
-			
+
 			return table;
 		} else {
 			var wrapper = document.createElement("div");
@@ -116,17 +116,17 @@ Module.register("MMM-Ruter",{
 				});
 			}));
 		}
-		
+
 		Promise.all(promises).then(function(promiseResults) {
 			if (promiseResults.length > 0) {
 				var allJourneys = [];
 				for(var i=0; i < promiseResults.length; i++) {
 					allJourneys = allJourneys.concat(promiseResults[i])
 				}
-				
+
 				allJourneys.sort(function(a,b) {
-					var dateA = new Date(a.time);
-					var dateB = new Date(b.time);
+					var dateA = new Date(a.time.Timestamp);
+					var dateB = new Date(b.time.Timestamp);
 					return dateA - dateB;
 				});
 
@@ -134,10 +134,10 @@ Module.register("MMM-Ruter",{
 			}
 		});
 	},
-	
+
 	updateDomIfNeeded: function() {
 		var needUpdate = false;
-		
+
 		for(var i=0; i < this.journeys.length; i++)  {
 			var time = this.formatTime(this.journeys[i].time);	
 			if (this.previousJourneys[i] == undefined || this.previousJourneys[i].lineName != this.journeys[i].lineName || this.previousJourneys[i].time != time) {
@@ -147,7 +147,7 @@ Module.register("MMM-Ruter",{
 				this.previousJourneys[i].time = time;
 			}
 		}
-		
+
 		if (needUpdate) {
 			this.updateDom(this.config.animationSpeed);
 		}
@@ -158,84 +158,84 @@ Module.register("MMM-Ruter",{
 
 		var HttpClient = function() {
 			this.get = function(requestUrl, requestCallback) {
-				var httpRequest = new XMLHttpRequest();
-				httpRequest.onreadystatechange = function() { 
-					if (httpRequest.readyState == 4 && httpRequest.status == 200)
-						requestCallback(httpRequest.responseText);
-				}
+				// var httpRequest = new XMLHttpRequest();
+				// httpRequest.onreadystatechange = function() {
+				// 	if (httpRequest.readyState == 4 && httpRequest.status == 200){
+				// 		requestCallback(httpRequest.responseText);
+				// 	}
+				// };
 
-				httpRequest.open( "GET", requestUrl, true );            
-				httpRequest.send( null );
+				// httpRequest.open("GET", requestUrl, true);
+				// httpRequest.setRequestHeader("Authorization", "");
+				// httpRequest.send(null);
+				self.requests.push(requestCallback);
+				self.sendSocketNotification("getstop", requestUrl);
 			}
 		}
 
-		var shouldAddPlatform = function(platform, platformFilter) {
-			if (platformFilter == null || platformFilter.length == 0) { return true; } // If we don't add any interesting platformFilter, then we asume we'll show all
-			for(var i=0; i < platformFilter.length; i++) {
-				if (platformFilter[i] === platform) { return true; }
-			}
-			
-			return false;
-		};
+		// var shouldAddPlatform = function(platform, platformFilter) {
+		// 	if (platformFilter == null || platformFilter.length == 0) { return true; } // If we don't add any interesting platformFilter, then we asume we'll show all
+		// 	for(var i=0; i < platformFilter.length; i++) {
+		// 		if (platformFilter[i] === platform) { return true; }
+		// 	}
 
-		var departureUrl = function() {
-			var dateParam = ""
-			if (stopItem.timeToThere) {
-				var min = stopItem.timeToThere;
-				var timeAhead = moment(moment.now()).add(min, "minute").format().substring(0, 16);
-				console.log("Looking for journeys " + min + " minutes ahead in time.");
-				dateParam = "?datetime=" + timeAhead;
-			} else {
-				console.log("Looking for current journeys");
-			}
+		// 	return false;
+		// };
+
+		// var departureUrl = function() {
+		// 	var dateParam = "";
+		// 	if (stopItem.timeToThere) {
+		// 		var min = stopItem.timeToThere;
+		// 		var timeAhead = moment(moment.now()).add(min, "minute").format().substring(0, 16);
+		// 		console.log("Looking for journeys " + min + " minutes ahead in time.");
+		// 		dateParam = "?datetime=" + timeAhead;
+		// 	} else {
+		// 		console.log("Looking for current journeys");
+		// 	}
 			
-			return "http://reisapi.ruter.no/StopVisit/GetDepartures/" + stopItem.stopId + dateParam;
-		};
+		// 	return "http://reisapi.ruter.no/StopVisit/GetDepartures/" + stopItem.stopId + dateParam;
+		// };
 
 		var stopUrl = function() {
-			return "http://reisapi.ruter.no/Place/GetStop/" + stopItem.stopId;
+			return "/ws/mobile/stopgroups/" + stopItem.stopId;
 		};
 
 		var client = new HttpClient();
 
 		client.get(stopUrl(), function(stopResponse) {
 			var stop = JSON.parse(stopResponse);
+			var stops = stop.StopGroups[0].Stops;
 
-			client.get(departureUrl(), function(response) {
-				var stops = JSON.parse(response);
-	
-				var allStopItems = new Array();
-	
-				for(var j = 0; j < stops.length; j++) {
-					var journey = stops[j].MonitoredVehicleJourney;
-					
-					if (shouldAddPlatform(journey.MonitoredCall.DeparturePlatformName, stopItem.platforms)) {
-						var numBlockParts = null;
-						if (journey.TrainBlockPart != null) {
-							numBlockParts = journey.TrainBlockPart.NumberOfBlockParts;
-						}
+			// client.get(departureUrl(), function(response) {
+			// var stops = JSON.parse(response);
 
-						var stopName = stopItem.stopName ? stopItem.stopName : stop.Name;
-						if (self.config.maxNameLength) {
-							stopName = stopName.substring(0, self.config.maxNameLength);
-						}
+			var allStopItems = [];
+
+			for(var j = 0; j < stops.length; j++) {
+				var journeys = stops[j];
+				console.log(journeys);
+				for (var k = 0; k < (journeys.RouteDirections || []).length; k++) {
+					var journey = journeys.RouteDirections[k];
+					for (var l = 0; l < journey.PassingTimes.length; l++) {
+						var time = journey.PassingTimes[l];
 
 						allStopItems.push({
 							stopId: stopItem.stopId,
-							stopName: stopName,
-							lineName: journey.PublishedLineName,
-							destinationName: journey.DestinationName,
-							time: journey.MonitoredCall.ExpectedDepartureTime,
-							platform: journey.MonitoredCall.DeparturePlatformName
+							stopName: journeys.Description,
+							lineName: journey.PublicIdentifier,
+							destinationName: journey.DirectionName,
+							service: journey.ServiceMode,
+							time: time,
+							platform: journeys.Detail
 						});
 					}
-				};
-	
-				callback(null, allStopItems)		
-			});
+				}
+			}
+			callback(null, allStopItems);
+			// });
 		})
 	},
-	
+
 	getTableHeaderRow: function() {
 		var thLine = document.createElement("th");
 		thLine.className = "light";
@@ -244,21 +244,22 @@ Module.register("MMM-Ruter",{
 		var thDestination = document.createElement("th");
 		thDestination.className = "light";
 		thDestination.appendChild(document.createTextNode(this.translate("DESTINATIONHEADER")));
-		
+
 		var thPlatform = document.createElement("th");
 		thPlatform.className = "light";
 		thPlatform.appendChild(document.createTextNode(this.translate("PLATFORMHEADER")));
 
 		var thStopName = document.createElement("th");
-		thStopName.className = "light"
+		thStopName.className = "light";
 		thStopName.appendChild(document.createTextNode(this.translate("STOPNAMEHEADER")));
 		
 		var thTime = document.createElement("th");
-		thTime.className = "light time"
+		thTime.className = "light time";
 		thTime.appendChild(document.createTextNode(this.translate("TIMEHEADER")));
 
 		var thead = document.createElement("thead");
 		thead.addClass = "xsmall dimmed";
+		thead.appendChild(document.createElement("th"));
 		thead.appendChild(thLine);
 		thead.appendChild(thDestination);
 		if (this.config.showStopName) { thead.appendChild(thStopName); }
@@ -269,6 +270,30 @@ Module.register("MMM-Ruter",{
 	},
 	
 	getTableRow: function(journey) {
+		var tdIcon = document.createElement("td");
+		var imageFA;
+		switch (journey.service) {
+		case "Bus":
+		case "Express":
+		case "Airport bus":
+			imageFA = "bus";
+			break;
+		case "Light rail":
+			imageFA = "subway";
+			break;
+		case "Ferry":
+		case "Boat":
+			imageFA = "ship";
+			break;
+		case "Train":
+			imageFA = "train";
+			break;
+		default:
+			imageFA = "rocket";
+			break;
+		}
+		tdIcon.className = "fa fa-"+imageFA;
+
 		var tdLine = document.createElement("td");
 		tdLine.className = "line";
 		var txtLine = document.createTextNode(journey.lineName);
@@ -287,14 +312,19 @@ Module.register("MMM-Ruter",{
 		if (this.config.showStopName) {
 			var tdStopName = document.createElement("td");
 			tdStopName.className = "light";
-			tdStopName.appendChild(document.createTextNode(journey.stopName));	
+			tdStopName.appendChild(document.createTextNode(journey.stopName));
 		}
 		
 		var tdTime = document.createElement("td");
-		tdTime.className = "time light";
-		tdTime.appendChild(document.createTextNode(this.formatTime(journey.time)));
+		if (journey.time.Status != "Schedule") {
+			tdTime.className = "time light sanntid";
+		} else {
+			tdTime.className = "time light";
+		}
+		tdTime.appendChild(document.createTextNode(this.formatTime(journey.time.Timestamp)));
 		
 		var tr = document.createElement("tr");
+		tr.appendChild(tdIcon);
 		tr.appendChild(tdLine);
 		tr.appendChild(tdDestination);
 		if (this.config.showStopName) { tr.appendChild(tdStopName); }
@@ -309,7 +339,7 @@ Module.register("MMM-Ruter",{
 		var min = diff.minutes() + diff.hours() * 60;
 
 		if (min == 0) {
-			return this.translate("NOW")
+			return this.translate("NOW");
 		} else if (min == 1) {
 			return this.translate("1MIN");
 		} else if (min < this.config.humanizeTimeTreshold) {
@@ -317,5 +347,19 @@ Module.register("MMM-Ruter",{
 		} else {
 			return moment(t).format(this.config.timeFormat);
 		}
-	}
+	},
+
+	socketNotificationReceived: function(notification, payload) {
+		var self = this;
+		Log.log(this.name + " recieved a socket notification: " + notification);
+		if (notification == "getstop") {
+			if (payload.err) {
+				throw payload.err;
+			} else {
+				self.requests.shift()(payload.response);
+			}
+		}
+	},
+	
+	requests: []
 });

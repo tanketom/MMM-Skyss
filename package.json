@@ -1,8 +1,8 @@
 {
   "name": "mmm-ruter",
   "version": "1.0.0",
-  "description": "The 'MMM-Temperature' module is for displaying the temperature from sensors connected to the Raspberry Pi",
-  "main": "MMM-Ruter.js",
+  "description": "Package to get realtime information about traffic in Norway, Hordaland",
+  "main": "MMM-Skyss.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
