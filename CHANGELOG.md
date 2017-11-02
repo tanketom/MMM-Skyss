@@ -1,7 +1,7 @@
 # MMM-Skyss Change Log
 
 ## [1.3.0s1.0.0] - 2017-11-01
-- Ruter app has now been forked from the ruter app. version naming is now [<MMM-Ruter version>s<Fork version>]
+- Ruter app has now been forked from the ruter app. version naming is now [(original version)s(Fork version)]
 
 ## [1.3.0] - 2017-08-19
 - The name of the stop will now automatically be fetched if you set `showStopName`. But you can still override it with the stop config value: `stopName`. See [documentation](README.md "MMM-Ruter Documentation") for more information.
