@@ -1,5 +1,6 @@
 # MagicMirror² Module: Skyss
 'MMM-Skyss' is a module for displaying public transport information for the Hordaland region in Norway on a [MagicMirror²](https://magicmirror.builders/). It's using data from Skyss.no. Skyss is a registered trademark of Hordaland County Councile (Hordaland Fylkeskommune) which is not affiliated with this product. Content from Skyss APIs may be copyrighted.
+
 ![Simple](images/MMM-Ruter_Simple.png)
 ![Full](images/MMM-Ruter_Full.png) 
 
@@ -68,9 +69,9 @@ fade | Set this to true to fade list from light to dark | true
 fadePoint | Start fading on 1/4th of the list | 0.25
 
 ## Stops
-You have to configure at least one stop. The module is using the same stop ID's as Skyss does in it's API. The simplest way to find those are to go to [https://ruter.no](https://ruter.no) in your browser and do a search _from_ your stop to somewhere/anywhere. Then extract `NNNNNN` from the resulting URL: https://ruter.no/reiseplanlegger/Mellom/Fra/(NNNNNN)*. 
+You have to configure at least one stop. The module is using the same stop ID's as Skyss does in it's API. I've added a json file with all the stops in Hordaland for your conveniece. You can find all the stops in [this file](https://raw.githubusercontent.com/PabloDons/MMM-Skyss/master/stops.json). Just do a search for the stop name and use the identifier.
 
-Notice that you can only use stops, not addresses or areas. You can test if it is a valid stop by enter the following URL in your browser http://api.skyss.no/StopVisit/GetDepartures/NNNNNN (replace NNNNNN with your id).
+Notice that you can only use stops, not addresses or areas.
 
 Stop option | Comment 
 ---|---
