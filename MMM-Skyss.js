@@ -206,14 +206,10 @@ Module.register("MMM-Skyss",{
 			var stop = JSON.parse(stopResponse);
 			var stops = stop.StopGroups[0].Stops;
 
-			// client.get(departureUrl(), function(response) {
-			// var stops = JSON.parse(response);
-
 			var allStopItems = [];
 
 			for(var j = 0; j < stops.length; j++) {
 				var journeys = stops[j];
-				console.log(journeys);
 				for (var k = 0; k < (journeys.RouteDirections || []).length; k++) {
 					var journey = journeys.RouteDirections[k];
 					for (var l = 0; l < journey.PassingTimes.length; l++) {
@@ -232,29 +228,28 @@ Module.register("MMM-Skyss",{
 				}
 			}
 			callback(null, allStopItems);
-			// });
 		})
 	},
 
 	getTableHeaderRow: function() {
 		var thLine = document.createElement("th");
-		thLine.className = "light";
+		thLine.className = "";
 		thLine.appendChild(document.createTextNode(this.translate("LINEHEADER")));
 
 		var thDestination = document.createElement("th");
-		thDestination.className = "light";
+		thDestination.className = "";
 		thDestination.appendChild(document.createTextNode(this.translate("DESTINATIONHEADER")));
 
 		var thPlatform = document.createElement("th");
-		thPlatform.className = "light";
+		thPlatform.className = "";
 		thPlatform.appendChild(document.createTextNode(this.translate("PLATFORMHEADER")));
 
 		var thStopName = document.createElement("th");
-		thStopName.className = "light";
+		thStopName.className = "";
 		thStopName.appendChild(document.createTextNode(this.translate("STOPNAMEHEADER")));
 		
 		var thTime = document.createElement("th");
-		thTime.className = "light time";
+		thTime.className = "time";
 		thTime.appendChild(document.createTextNode(this.translate("TIMEHEADER")));
 
 		var thead = document.createElement("thead");
