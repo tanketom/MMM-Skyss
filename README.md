@@ -29,7 +29,7 @@ npm install
 ````
 
 Add the module to the modules array in the `config/config.js` file by adding the following section. You can change this configuration later when you see this works:
-```
+```javascript
 {
 	module: 'MMM-Skyss',
 	header: 'Skyss',
@@ -48,6 +48,9 @@ Add the module to the modules array in the `config/config.js` file by adding the
 	}
 },
 ```
+
+You also need an auth token. In order to retrieve one, I used a packet monitor and extracted the token from my phone's app.
+You can either do the same or ask me personally for one. I am currently working on a way to generate a new token for each client
 
 # Configuration options
 
@@ -106,6 +109,7 @@ If you add other languages, please make a PR or drop me a line!
 
 # Future enhanchements
 
-1. show deviations
-2. add filter for platforms
-3. add filter for departures that are too close to make
+1. Generate a new auth token for each client
+1. Show deviations
+1. Add filter for platforms
+1. Add filter for departures that are too close to make
