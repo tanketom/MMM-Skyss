@@ -108,16 +108,13 @@ Module.register("MMM-Skyss",{
     startPolling: function() {
         var self = this;
 
-        var promises = [];
-        for(var i=0; i < this.config.stops.length; i++) {
-            promises.push(new Promise((resolv) => {
-                this.getStopInfo(this.config.stops[i], function(err, result) {
-                    resolv(result);
-                });
-            }));
-        }
+        var promise = new Promise((resolv) => {
+            this.getStopInfo(this.config.stops, function(err, result) {
+                resolv(result);
+            });
+        });
 
-        Promise.all(promises).then(function(promiseResults) {
+        promise.then(function(promiseResults) {
             if (promiseResults.length > 0) {
                 var allJourneys = [];
                 for(var i=0; i < promiseResults.length; i++) {
@@ -153,7 +150,7 @@ Module.register("MMM-Skyss",{
         }
     },
 
-    getStopInfo: function(stopItem, callback) {
+    getStopInfo: function(stopItems, callback) {
         var self = this;
 
         var HttpClient = function() {
@@ -197,35 +194,32 @@ Module.register("MMM-Skyss",{
         // };
 
         var stopUrl = function() {
-            return "/ws/mobile/stopgroups/" + stopItem.stopId;
+            return "/public/departures?Hours=12&StopIdentifiers=" + stopItems.map(stopItem => stopItem.stopId).join();
         };
 
         var client = new HttpClient();
 
         client.get(stopUrl(), function(stopResponse) {
-            var stop = JSON.parse(stopResponse);
-            var stops = stop.StopGroups[0].Stops;
+            var departure = JSON.parse(stopResponse);
+            var times = departure.PassingTimes;
 
             var allStopItems = [];
 
-            for(var j = 0; j < stops.length; j++) {
-                var journeys = stops[j];
-                for (var k = 0; k < (journeys.RouteDirections || []).length; k++) {
-                    var journey = journeys.RouteDirections[k];
-                    for (var l = 0; l < journey.PassingTimes.length; l++) {
-                        var time = journey.PassingTimes[l];
-
-                        allStopItems.push({
-                            stopId: stopItem.stopId,
-                            stopName: journeys.Description,
-                            lineName: journey.PublicIdentifier,
-                            destinationName: journey.DirectionName,
-                            service: journey.ServiceMode,
-                            time: time,
-                            platform: journeys.Detail
-                        });
-                    }
-                }
+            for(var j = 0; j < times.length; j++) {
+                var journey = times[j];
+                var stop = departure.Stops[journey.StopIdentifier];
+                allStopItems.push({
+                    stopId: journey.StopIdentifier,
+                    stopName: stop.PlaceDescription,
+                    lineName: journey.RoutePublicIdentifier,
+                    destinationName: journey.TripDestination,
+                    service: stop.ServiceModes[0],
+                    time: {
+                        Timestamp: journey.AimedTime,
+                        Status: journey.Status,
+                    },
+                    platform: journey.Platform
+                });
             }
             callback(null, allStopItems);
         })
@@ -330,8 +324,10 @@ Module.register("MMM-Skyss",{
     },
 
     formatTime: function(t) {
-        var diff = moment.duration(moment(t) - moment.now());
-        var min = diff.minutes() + diff.hours() * 60;
+        var now = new Date();
+        var tti = new Date(t);
+        var diff = tti - now;
+        var min = Math.floor(diff/60000);
 
         if (min == 0) {
             return this.translate("NOW");
@@ -340,7 +336,7 @@ Module.register("MMM-Skyss",{
         } else if (min < this.config.humanizeTimeTreshold) {
             return min + " " + this.translate("MINUTES");
         } else {
-            return moment(t).format(this.config.timeFormat);
+            return tti.getHours() + ":" + ("0" + tti.getMinutes()).slice(-2);
         }
     },
 

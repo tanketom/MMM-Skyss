@@ -1,6 +1,5 @@
 const NodeHelper = require("node_helper");
 const https = require("https");
-const auth = require("./auth.json");
 module.exports = NodeHelper.create({
     start: function(){
         console.log("Starting module: " + this.name)
@@ -9,9 +8,8 @@ module.exports = NodeHelper.create({
         var self = this;
         if (notification == "getstop") {
             const options = {
-                hostname: 'api.skyss.no',
-                path: payload,
-                headers: auth
+                hostname: 'skyss.giantleap.no',
+                path: payload
             };
             var req = https.get(options, (res)=>{
                 res.setEncoding('utf8');

@@ -39,18 +39,15 @@ Add the module to the modules array in the `config/config.js` file by adding the
 		maxItems: 8,
 		stops: [
 			{
-				stopId: "placeId_011022"
+				stopId: "12011092"
 			},
 			{
-				stopId: "placeId_011092"
+				stopId: "12011022"
 			},
 		]
 	}
 },
 ```
-
-You also need an auth token. In order to retrieve one, I used a packet monitor and extracted the token from my phone's app.
-You can either do the same or ask me personally for one. I am currently working on a way to generate a new token for each client
 
 # Configuration options
 
@@ -72,14 +69,12 @@ fade | Set this to true to fade list from light to dark | true
 fadePoint | Start fading on 1/4th of the list | 0.25
 
 ## Stops
-You have to configure at least one stop. The module is using the same stop ID's as Skyss does in it's API. I've added a json file with all the stops in Hordaland for your conveniece. You can find all the stops in [this file](https://raw.githubusercontent.com/PabloDons/MMM-Skyss/master/stops.json). Just do a search for the stop name and use the identifier.
-
-Notice that you can only use stops, not addresses or areas.
+You have to configure at least one stop. The module uses the same stop ID's used in the [avgangsvisning](https://avgangsvisning.skyss.no/) mode on skyss' website. just go to [this link](https://avgangsvisning.skyss.no/) and select the stops you want (different directions of the same stop each have their own stop). Fill out the rest of the form randomly so the website generates a url. In this url you'll find each stop as a data argument separated by commas. Example:
+https://avgangsvisning.skyss.no/board/#/?stops= **12011093,12011092,12011022,12011021** &viewFreq=10000&terminal=true&colors=dark&name=name
 
 Stop option | Comment 
 ---|---
-stopId | Id of stop  
-stopName | Override name of the stop if you know it by another name or want to keep it short. You have to enable `showStopName` in module configuration. 
+stopId | Id of stop
 <!-- platformFilter | The names of the platforms you want to see. Please temporarely enable `showPlatformName` in the module configuration to get the correct platform names before you configure this option. If these names aren't valid, nothing will be displayed. -->
 <!-- timeToThere | How long time in minutes does it take for you to get to this stop? It's no point showing journeys that till go in 1 minute if it takes you 5 minutes to get there... -->
 
@@ -87,11 +82,10 @@ Example:
 ```
 stops: [
 	{
-		stopId: "placeId_011098"
+		stopId: "12011092"
 	},
 	{
-		stopId: "placeId_011094",
-		stopName: "Mitt stopp"
+		stopId: "12011022"
 	}
 ]
 
@@ -109,7 +103,7 @@ If you add other languages, please make a PR or drop me a line!
 
 # Future enhanchements
 
-1. Generate a new auth token for each client
+1. ~~Generate a new auth token for each client~~
 1. Show deviations
-1. Add filter for platforms
+1. ~~Add filter for platforms~~ (Each platform has it's own stop now. Simply don't include it)
 1. Add filter for departures that are too close to make
