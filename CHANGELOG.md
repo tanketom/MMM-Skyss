@@ -1,5 +1,8 @@
 # MMM-Skyss Change Log
 
+## [1.3.0s1.1.1] - 2018-01-18
+- Temporary fix on an update issue which needed to be addressed quickly.
+
 ## [1.3.0s1.1.0] - 2018-01-18
 - Changed API endpoint to giantleap.no which has a different format and changed a bunch of behavior.
 

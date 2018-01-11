@@ -15,8 +15,7 @@ Module.register("MMM-Skyss",{
         showStopName: false,           // Show the name of the stop (you have to configure 'name' for each stop)
         maxItems: 5,                   // Number of journeys to display (default is 5)
         humanizeTimeTreshold: 15,      // If time to next journey is below this value, it will be displayed as "x minutes" instead of time (default is 15 minutes)
-        serviceReloadInterval: 30000,  // Refresh rate in MS for how often we call Ruter's web service. NB! Don't set it too low! (default is 30 seconds)
-        timeReloadInterval: 1000,      // Refresh rate how often we check if we need to update the time shown on the mirror (default is every second)
+        serviceReloadInterval: 30000,  // Refresh rate in MS for how often we call Skyss' web service. NB! Don't set it too low! (default is 30 seconds)
         animationSpeed: 0,             // How fast the animation changes when updating mirror (default is 0 second)
         fade: true,                    // Set this to true to fade list from light to dark. (default is true)
         fadePoint: 0.25                // Start on 1/4th of the list.
@@ -27,7 +26,7 @@ Module.register("MMM-Skyss",{
     },
 
     getScripts: function() {
-        return ["moment.js"];
+        return [];
     },
 
     getTranslations: function() {
@@ -45,7 +44,6 @@ Module.register("MMM-Skyss",{
         var self = this;
 
          // Set locale and time format based on global config
-        moment.locale(config.language);
         if (config.timeFormat === 24) {
             this.config.timeFormat = "HH:mm";
         } else {
@@ -58,10 +56,6 @@ Module.register("MMM-Skyss",{
         setInterval(function() {
             self.startPolling();
         }, this.config.serviceReloadInterval);
-
-        setInterval(function() {
-            self.updateDomIfNeeded();
-        }, this.config.timeReloadInterval);
     },
 
     getDom: function() {
@@ -100,9 +94,9 @@ Module.register("MMM-Skyss",{
             var wrapper = document.createElement("div");
             wrapper.innerHTML = this.translate("LOADING");
             wrapper.className = "small dimmed";
+            return wrapper;
         }
 
-        return wrapper;
     },
 
     startPolling: function() {
@@ -128,26 +122,10 @@ Module.register("MMM-Skyss",{
                 });
 
                 self.journeys = allJourneys.slice(0, self.config.maxItems);
+
+                self.updateDom();
             }
         });
-    },
-
-    updateDomIfNeeded: function() {
-        var needUpdate = false;
-
-        for(var i=0; i < this.journeys.length; i++)  {
-            var time = this.formatTime(this.journeys[i].time);
-            if (this.previousJourneys[i] == undefined || this.previousJourneys[i].lineName != this.journeys[i].lineName || this.previousJourneys[i].time != time) {
-                needUpdate = true;
-                this.previousJourneys[i] = {};
-                this.previousJourneys[i].lineName = this.journeys[i].lineName;
-                this.previousJourneys[i].time = time;
-            }
-        }
-
-        if (needUpdate) {
-            this.updateDom(this.config.animationSpeed);
-        }
     },
 
     getStopInfo: function(stopItems, callback) {
