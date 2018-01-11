@@ -1,7 +1,7 @@
 # MMM-Skyss Change Log
 
 ## [1.3.0s1.1.0] - 2018-01-18
-- Changed API endpoint to giantleap.no which has a different format and changed a bunch of behaviour.
+- Changed API endpoint to giantleap.no which has a different format and changed a bunch of behavior.
 
 ## [1.3.0s1.0.0] - 2017-11-01
 - Ruter app has now been forked from the ruter app. version naming is now [(original version)s(Fork version)]
