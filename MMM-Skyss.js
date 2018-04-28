@@ -18,7 +18,8 @@ Module.register("MMM-Skyss",{
         serviceReloadInterval: 30000,  // Refresh rate in MS for how often we call Skyss' web service. NB! Don't set it too low! (default is 30 seconds)
         animationSpeed: 0,             // How fast the animation changes when updating mirror (default is 0 second)
         fade: true,                    // Set this to true to fade list from light to dark. (default is true)
-        fadePoint: 0.25                // Start on 1/4th of the list.
+        fadePoint: 0.25,               // Start on 1/4th of the list.
+        useRealtime: true              // Whether to use realtime data from Skyss
     },
 
     getStyles: function () {
@@ -147,6 +148,32 @@ Module.register("MMM-Skyss",{
                 self.sendSocketNotification("getstop", requestUrl);
             }
         }
+    
+        //DisplayTime contains realtime-information. Formatted as "x min"(remaining time), or "HH:mm"
+        var processSkyssDisplaytime = function(displayTime) {
+            var realTime;
+            var regexInMinutes = new RegExp('([0-9]+) min');
+            var regexLocalTimeStamp = new RegExp('[0-9]{2}\:[0-9]{2}');
+        
+            //Time format is "x min"
+            if (regexInMinutes.test(displayTime)) {
+                inMinutes = parseInt(displayTime.match(regexInMinutes)[1]);
+            
+                // Adding 1 gives same result as skyss app -.-
+                realTime = moment().add(inMinutes+1, 'minutes');
+            
+            //Time format is "HH:mm". 
+            } else if (regexLocalTimeStamp.test(displayTime)) {
+                realTime = moment(displayTime, "HH:mm");
+            
+                //Time is next day
+                if (realTime.isBefore(moment())) {
+                	realTime.add(1, 'day');
+                }
+            }
+            return realTime;
+        };
+        
 
         // var shouldAddPlatform = function(platform, platformFilter) {
         //     if (platformFilter == null || platformFilter.length == 0) { return true; } // If we don't add any interesting platformFilter, then we asume we'll show all
@@ -186,6 +213,15 @@ Module.register("MMM-Skyss",{
             for(var j = 0; j < times.length; j++) {
                 var journey = times[j];
                 var stop = departure.Stops[journey.StopIdentifier];
+                var timestamp;
+                
+                var realtimeStamp = processSkyssDisplaytime(journey.DisplayTime);
+                if ( self.config.useRealtime && moment.isMoment(realtimeStamp) ) {
+                    timestamp = realtimeStamp.toISOString();
+                } else {
+                    timestamp = journey.AimedTime;
+                }
+                
                 allStopItems.push({
                     stopId: journey.StopIdentifier,
                     stopName: stop.PlaceDescription,
@@ -193,7 +229,7 @@ Module.register("MMM-Skyss",{
                     destinationName: journey.TripDestination,
                     service: stop.ServiceModes[0],
                     time: {
-                        Timestamp: journey.AimedTime,
+                        Timestamp: timestamp,
                         Status: journey.Status,
                     },
                     platform: journey.Platform
